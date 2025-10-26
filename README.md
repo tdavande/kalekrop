@@ -1,6 +1,3 @@
-Of course. Here is the esoteric README text converted and cleaned up for proper **Markdown formatting**.
-
----
 
 # 💾 The Iterated Cycle: Patterns in Sound
 
