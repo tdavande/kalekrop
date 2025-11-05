@@ -1,12 +1,12 @@
 
-//s0.initScreen()
+s0.initScreen()
 //s0.initCam()
-x = () => mouse.x/width // 0→1
-y = () => mouse.y/height // 0→1
 src(s0)
-  .colorama(()=>mouse.y/1000)
+  .colorama(()=>mouse.y/2000)
 .modulateScale(o0)
 .modulateScale(o0,()=>mouse.x/5000,)
 .blend(o0,)
+.hue(() => Math.sin(time)/2)
   .out(o0)
 
+ 
