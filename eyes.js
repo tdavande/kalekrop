@@ -1,6 +1,4 @@
-// licensed with CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
-// by Zach Krall
-// http://zachkrall.online/
+
 
 osc( 215, 0.1, 2 )
 .modulate(
