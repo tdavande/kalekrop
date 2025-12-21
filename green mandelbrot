@@ -1,0 +1,67 @@
+fetch("https://raw.githubusercontent.com/rexmalebka/hydra-threejs/changes/hack/dist/hydra-three.js")
+  .then(x => x.text())
+  .then(text => {
+    let script = document.createElement("script")
+    script.innerHTML = text
+    document.body.appendChild(script)
+  })
+
+
+// 1. Setup Three.js Scene and Shader
+const scene = new THREE.Scene()
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+const renderer = new THREE.WebGLRenderer({ alpha: true })
+renderer.setSize(window.innerWidth, window.innerHeight)
+
+// 2. Mandelbrot Shader Material
+const mandelShader = new THREE.ShaderMaterial({
+  uniforms: {
+    u_time: { value: 0 },
+    u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+  },
+  fragmentShader: `
+    uniform float u_time;
+    uniform vec2 u_res;
+
+    void main() {
+      // Pulse effect for zooming
+      float pulse = 0.5 + 0.5 * sin(u_time * 0.5);
+      vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / min(u_res.y, u_res.x);
+      
+      // Mandelbrot math
+      vec2 c = uv * (2.0 - pulse) - vec2(0.5, 0.0);
+      vec2 z = vec2(0.0);
+      float iter = 0.0;
+      for (float i = 0.0; i < 100.0; i++) {
+        z = vec4(z.x*z.x - z.y*z.y, 2.0*z.x*z.y, 0, 0).xy + c;
+        if (length(z) > 2.0) break;
+        iter++;
+      }
+
+      // Create a "Green Glow" based on iterations
+      float f = iter / 100.0;
+      vec3 greenColor = vec3(0.0, f * (1.0 + 0.5 * sin(u_time * 2.0)), 0.0);
+      gl_FragColor = vec4(greenColor, 1.0);
+    }
+  `
+})
+
+// 3. Apply to a Plane
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mandelShader)
+scene.add(plane)
+
+// 4. Animation and Hydra Output
+const animate = () => {
+  requestAnimationFrame(animate)
+  mandelShader.uniforms.u_time.value += 0.01
+  renderer.render(scene, camera)
+}
+animate()
+
+// 5. Pipe into Hydra s0
+s0.init({ src: renderer.domElement })
+
+src(s0)
+  .modulate(osc(10, 0.1), 0.02) // Subtle Hydra wave effect
+  .kaleid(0.5)	
+  .out()
