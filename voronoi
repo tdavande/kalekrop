@@ -1,0 +1,8 @@
+
+bpm = 142
+voronoi(10,2,1)
+.color(1,0,50)
+.kaleid(4,1)
+.modulate(o0)
+.modulatePixelate(noise(25,0.5),100)
+.out(o0)
