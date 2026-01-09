@@ -19,25 +19,6 @@ The tracks reflect the following core principles:
 
 The sound files (`.mp3` or `.wav`) are the *surface-level* outputs. The repository structure maps the musical patterns to their digital containers:
 
-| Directory | Content | Function |
-| :--- | :--- | :--- |
-| `/cycles` | Individual track folders (e.g., `01_Tessellation`) | The core pattern grouping. |
-| `/audio` | Rendered, mastered sound files. | **The Manifestation.** |
-| `/code` | `.strudel` files containing the working code. | **The Specification.** |
-| `/docs` | Notes on global tempo (`setCps`) and library usage. | System configuration records. |
-
----
-
-## III. Interfacing with the Source
-
-To truly engage with the work, one must understand the source code. The patterns utilize the following functional operators:
-
-* **`s("...")`**: The **Atomic Command**. Triggers a sound event.
-* **`.nudge(P)`**: **Temporal Shift**. Introduces the essential 'swing' by micro-shifting the pattern's timeline.
-* **`fast(N)` / `slow(N)`**: **Rate Modulation**. Alters the perceived velocity of the pattern's execution.
-* **`struct("...")`**: **Boolean Masking**. Defines a meta-rhythm, controlling when the primary pattern is allowed to sound.
-
-***
 
 **// TERMINAL ECHO //**
 
