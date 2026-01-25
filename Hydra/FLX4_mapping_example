@@ -1,0 +1,38 @@
+// 1. Setup global storage for 'Current' and 'Target' values
+window.flx = { hi: 0.5, mid: 0.5, low: 0.5, fader: 0.5 }
+window.target = { hi: 0.5, mid: 0.5, low: 0.5, fader: 0.5 }
+
+// 2. Direct Hardware Link (Updates TARGETS only)
+navigator.requestMIDIAccess().then(access => {
+  const input = Array.from(access.inputs.values()).find(i => i.name.includes("DDJ-FLX4"))
+  if (input) {
+    input.onmidimessage = (m) => {
+      const [status, cc, value] = m.data
+      const norm = value / 127
+      if (cc === 7)  window.target.hi = norm
+      if (cc === 11) window.target.mid = norm
+      if (cc === 15) window.target.low = norm
+      if (cc === 19) window.target.fader = norm
+    }
+  }
+})
+
+// 3. Smoothing Function (Standard 0.1 factor = heavy smoothing)
+const smooth = (key, factor = 0.1) => {
+  window.flx[key] += (window.target[key] - window.flx[key]) * factor
+  return window.flx[key]
+}
+
+// 4. The Visual (All parameters now use the smooth function)
+osc(
+  () => smooth('hi') * 40 + 5,      // High EQ: Smooth frequency
+  0.05, 
+  () => smooth('low') * 3           // Low EQ: Smooth color cycle
+)
+.modulate(
+  noise(3), 
+  () => smooth('mid')               // Mid EQ: Smooth distortion
+)
+.scale(() => smooth('fader') + 0.5) // Fader: Smooth zoom
+
+.out()

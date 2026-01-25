@@ -1,0 +1,59 @@
+
+// 1. Initialize the Mega-Object
+window.flx = { 
+  h1:0.5, m1:0.5, l1:0.5, f1:0.5, fi1:0.5, temp1:0.5, jog1:0.5,
+  h2:0.5, m2:0.5, l2:0.5, f2:0.5, fi2:0.5, temp2:0.5, jog2:0.5,
+  xfader: 0.5, pad1: 0, pad2: 0
+}
+window.target = { ...window.flx }
+
+// 2. Smoothing Helper
+const smooth = (key, ease = 0.1) => {
+  window.flx[key] += (window.target[key] - window.flx[key]) * ease
+  return window.flx[key]
+}
+
+// 3. The Hardware Link
+navigator.requestMIDIAccess().then(access => {
+  const input = Array.from(access.inputs.values()).find(i => i.name.includes("DDJ-FLX4"))
+  if (input) {
+    input.onmidimessage = (m) => {
+      const [status, cc, value] = m.data
+      const norm = value / 127
+      
+      // --- MIXER & FADERS ---
+      if (cc === 7)  window.target.h1 = norm
+      if (cc === 11) window.target.m1 = norm
+      if (cc === 15) window.target.l1 = norm
+      if (cc === 19) window.target.f1 = norm
+      if (cc === 23) window.target.fi1 = norm
+      
+      if (cc === 8)  window.target.h2 = norm
+      if (cc === 12) window.target.m2 = norm
+      if (cc === 16) window.target.l2 = norm
+      if (cc === 20) window.target.f2 = norm
+      if (cc === 24) window.target.fi2 = norm
+      
+      if (cc === 31) window.target.xfader = norm
+
+      // --- TEMPO SLIDERS ---
+      if (cc === 0)  window.target.temp1 = norm
+      if (cc === 1)  window.target.temp2 = norm
+
+      // --- JOG WHEELS (Relative to Absolute) ---
+      // Jog wheels send 65 for clockwise and 63 for counter-clockwise
+      if (cc === 33) window.target.jog1 = (window.target.jog1 + (value - 64) * 0.001) % 1
+      if (cc === 34) window.target.jog2 = (window.target.jog2 + (value - 64) * 0.001) % 1
+
+      // --- PADS (Note On/Off) ---
+      if (status === 144) { // Pad Pressed
+         if (cc === 0) window.target.pad1 = 1
+         if (cc === 1) window.target.pad2 = 1
+      }
+      if (status === 128) { // Pad Released
+         if (cc === 0) window.target.pad1 = 0
+         if (cc === 1) window.target.pad2 = 0
+      }
+    }
+  }
+})

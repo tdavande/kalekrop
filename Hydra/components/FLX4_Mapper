@@ -1,0 +1,25 @@
+
+
+window.flx = { hi: 0, mid: 0, low: 0, fader: 0 }
+window.target = { hi: 0, mid: 0, low: 0, fader: 0 }
+
+const smooth = (key, ease = 0.1) => {
+  window.flx[key] += (window.target[key] - window.flx[key]) * ease
+  return window.flx[key]
+}
+
+navigator.requestMIDIAccess().then(access => {
+  const input = Array.from(access.inputs.values()).find(i => i.name.includes("DDJ-FLX4"))
+  if (input) {
+    console.log("FLX4 Connected and Mapping Active")
+    input.onmidimessage = (m) => {
+      const [status, cc, value] = m.data
+      const norm = value / 127
+      if (cc === 7)  window.target.hi = norm
+      if (cc === 11) window.target.mid = norm
+      if (cc === 15) window.target.low = norm
+      if (cc === 19) window.target.fader = norm
+      if (cc === 23) window.target.filter = norm
+    }
+  }
+})
