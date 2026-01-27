@@ -1,0 +1,91 @@
+setcpm(174/4)
+
+// 1. SAMPLES & SLIDERS
+samples({
+  logi: 'breaks165/000_RAWCLN.WAV',
+  heavy: 'baa/001.wav'
+}, 'https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/');
+
+const lpf = slider(2128.2, 600, 6000) 
+const gain_ctrl = slider(1, 0, 1.2)
+
+// 2. DRUMS & SHUFFLE
+let drums = stack(
+  s("bd:1").beat("0,7?,10",16).duck("3:4:5").gain(1.2),
+  s("sd:2").beat("4,12",16),
+  s("~ ~ ~ ~  ~ ~ ~ [~ sn:2@0.4]").lpf(800),
+  s("logi").slice(8, "0 1 2 3 4 5 6 7").loopAt(1).lpf(1500).gain(0.8).jux(rev)
+)
+
+let dropHats = stack(
+  s("hh:4*8").gain(0.7),
+  s("hh:4*8").delay(0.04).gain(sine.range(0.2, 0.5).fast(4)).offset(0.5),
+  s("logi").slice(16, "2 2 6 2").fast(2).lpf(5000).gain(0.4)
+).hpf(2000)
+
+// 3. REESE BASSLINES
+let reeseTexture = stack(s("sine").gain(1.4), s("square").detune(6).gain(0.4));
+
+let reeseSus = reeseTexture
+  .note("<f1 db1 ab0 eb1>") // Improved melodic resolution
+  .struct("1(3,8,2)") 
+  .lpf(sine.range(200, 3000).fast(2)).lpq(22)
+  .gain(sine.range(0.7, 1.2).fast(2)).legato(0.9);
+
+let reeseEvolving = reeseTexture
+  .note("<f1*4 db1*4>")
+  .lpf(sine.range(200, 2000).speed("<1 2 4 0.5>/8")).lpq(12).legato(1);
+
+let reeseJazzy = note("<f2 ab1 bb1 c2>")
+  .stack(s("sine").gain(1.2), s("sawtooth").detune(8).gain(0.6))
+  .lpf(800).struct("1(3,8)").legato(0.7);
+
+let reese = s("heavy").loopAt(1).detune(15).lpf(sine.range(100, 900).slow(4)).gain(0.9);
+
+// 4. IMPROVED ATMOSPHERICS & INSTRUMENTS
+let lead = stack(
+  // SUSTAINED ATMOSPHERIC PADS
+  note("<[f3,ab3,c4] [db3,f3,ab3] [ab2,c3,eb3] [eb3,g3,bb3]>")
+    .sound("supersaw").lpf(sine.range(500, 1200).slow(8)).lpq(4)
+    .attack(1).release(2).legato(1.1) // Long fades
+    .room(1).sz(0.9).gain(0.3).hpf(300),
+
+  // CRYSTAL BELLS
+  note("<f5 ab5 [c6 bb5] g5 eb5 f5!2>").sound("gm_glockenspiel")
+    .delay(0.4).room(0.6).velocity(0.5).decay(0.5).mask("<1 0 1 1 0 1 1 0>/4"),
+
+  // SUB-GHOST BASS (Thin pluck)
+  note("<f2 db3 ab2 eb2>").sound("gm_electric_bass_pick:2")
+    .release(0.1).gain(0.3).mask("<1 1 0 1>/4")
+)
+
+let Piano = note("<[f2, ab3, c4] [db2, f3, ab3] [ab1, c3, eb3] [c2, eb3, g3]>")
+    .sound("piano").lpf(800).room(0.6).gain(0.6).velocity(0.5);
+
+let PianoBass = sound("<[1 3]> <[3 5]> <[5 7]> <[7 9]>").scale("f:minor").sound("piano").gain(0.4).legato(0.6)
+
+let dure = s("supersaw").seg(16).lpf(tri.range(100, 4000).slow(4)).gain(0.4).hpf(400);
+
+let synth = note("f1*16").sound("sine").transpose(irand(32)).scale('f minor').scaleTranspose(3).gain(1)
+
+let chords = note("<[f3,ab3,c4] [db3,f3,ab3]>").sound("triangle").decay(1).room(0.5).gain(0.5);
+
+// 5. ARRANGEMENT
+arrange(
+  [4, drums],
+  [8, stack(Piano, dure, drums)],
+  [8, stack(Piano, PianoBass, dure, drums)],
+  [4, stack(Piano, PianoBass, lead, reeseJazzy)],
+  [4, stack(drums, synth, dure, reeseJazzy)],
+  [12, stack(drums, synth, chords, dure, lead, reeseJazzy)],
+  [8, stack(Piano, synth,drums.gain(0.3), reese)],
+  [4, stack(Piano, synth, PianoBass, drums.gain(0.3), reese)], 
+  [3, stack(Piano, synth, PianoBass.velocity("1 1.1 1.2 1.3 1.4 1.5 1.8 2"), drums.gain(0.3), reese)],
+  [1, stack(reeseJazzy.gain(1.5))],
+  [16, stack(dropHats, drums, synth, chords, dure, reeseEvolving, lead).gain(0.7)],
+  [4, stack(Piano, dure, lead, reeseJazzy).coarse("<1 2>")],
+  [8, stack(dropHats, drums, synth.gain(1), chords, reeseSus, lead).gain(0.5)],
+  [24, stack(dropHats, drums, synth.gain(1), chords, dure, reeseSus, lead).gain(0.5)], 
+  [16, lead.room(0.1)],
+  [8, stack(drums,lead.room(0.1))],
+)
