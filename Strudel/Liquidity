@@ -6,12 +6,12 @@ samples({
   heavy: 'baa/001.wav'
 }, 'https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/');
 
-const lpf = slider(2128.2, 600, 6000) 
-const gain_ctrl = slider(1, 0, 1.2)
+const lpf = slider(600, 600, 6000) 
+const gain_ctrl = slider(0, 0, 1.2)
 
 // 2. DRUMS & SHUFFLE
 let drums = stack(
-  s("bd:1").beat("0,7?,10",16).duck("3:4:5").gain(1.2),
+  s("bd:1").beat("0,7?,10",16).duck("3:4:5").gain(1.5),
   s("sd:2").beat("4,12",16),
   s("~ ~ ~ ~  ~ ~ ~ [~ sn:2@0.4]").lpf(800),
   s("logi").slice(8, "0 1 2 3 4 5 6 7").loopAt(1).lpf(1500).gain(0.8).jux(rev)
@@ -56,7 +56,7 @@ let lead = stack(
 
   // SUB-GHOST BASS (Thin pluck)
   note("<f2 db3 ab2 eb2>").sound("gm_electric_bass_pick:2")
-    .release(0.1).gain(0.3).mask("<1 1 0 1>/4")
+    .release(0.1).gain(0.5).mask("<1 1 0 1>/4")
 )
 
 let Piano = note("<[f2, ab3, c4] [db2, f3, ab3] [ab1, c3, eb3] [c2, eb3, g3]>")
@@ -69,6 +69,22 @@ let dure = s("supersaw").seg(16).lpf(tri.range(100, 4000).slow(4)).gain(0.4).hpf
 let synth = note("f1*16").sound("sine").transpose(irand(32)).scale('f minor').scaleTranspose(3).gain(1)
 
 let chords = note("<[f3,ab3,c4] [db3,f3,ab3]>").sound("triangle").decay(1).room(0.5).gain(0.5);
+
+let buildUp = stack(
+  // The main break getting thinner and thinner
+  s("logi").slice(8, "0 1 2 3 4 5 6 7").loopAt(1)
+    .hpf(range(0, 2000, saw.slow(4))) // The "Rising" filter effect
+    .gain(range(0.8, 0.5, saw.slow(4))),
+
+  // A fast, light Snare Roll 
+  s("sd:2")
+    .struct("<[~ ~ ~ ~] [~ 1 ~ 1] [1 1 1 1] [1*8]>")
+    .gain(range(0, 1, saw.slow(4)))
+    .lpf(4000),
+
+  // The Riser
+  s("supersaw").note(range(-12, 12, saw.slow(4))).gain(range(0, 0.3, saw.slow(4))).lpf(2000)
+).mask("<1 1 1 [1 1 1 0]>") // Final beat silence
 
 // 5. ARRANGEMENT
 arrange(
@@ -85,7 +101,17 @@ arrange(
   [16, stack(dropHats, drums, synth, chords, dure, reeseEvolving, lead).gain(0.7)],
   [4, stack(Piano, dure, lead, reeseJazzy).coarse("<1 2>")],
   [8, stack(dropHats, drums, synth.gain(1), chords, reeseSus, lead).gain(0.5)],
-  [24, stack(dropHats, drums, synth.gain(1), chords, dure, reeseSus, lead).gain(0.5)], 
+  [24, stack(dropHats, drums, synth.gain(1), chords, dure, reeseSus, lead).gain(0.5)],  
   [16, lead.room(0.1)],
-  [8, stack(drums,lead.room(0.1))],
+  [16, stack(drums,lead.room(0.1))],
+  [4, stack(drums,lead.room(0.1), chords )],
+  [8, stack(drums,lead.room(0.1), Piano.gain(1) )],
+  [4, stack(drums,lead, Piano.gain(1), dure )],
+  [16, stack(drums,lead.jux(rev), Piano.gain(1), dure, reeseJazzy.gain(1.5) )],
+  [4, stack(Piano, synth.jux(rev), PianoBass.velocity("1 1.1 1.2 1.3 1.4 1.5 1.8 2").jux(rev).gain(0.4), reese)],
+  [4, stack(Piano, synth.jux(rev), PianoBass.velocity("1 1.1 1.2 1.3 1.4 1.5 1.8 2").jux(rev).gain(range(0.4, 1.2, saw.slow(4))).lpf(range(400, 2000, saw.slow(4))),buildUp,reese)],
+  [15, stack(dropHats, drums, synth.gain(1), chords, dure, reeseSus, lead, PianoBass.velocity("1 1.1 1.2 1.3 1.4 1.5 1.8 2").jux(rev)).gain(0.5)],
+  [1, dropHats.slow(2).mask("<1 1 1 0>")],
+  [16, stack(dropHats, drums, synth.gain(1), chords, dure, reeseSus, lead, PianoBass.velocity("1 [1.1 1.2] 1.3 1.4 [1.5 1.8] 2").jux(press).postgain(1.5)).gain(0.5)],
+  [1, stack(reeseJazzy.gain(2).roomfade(20))],
 )
