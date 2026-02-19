@@ -1,6 +1,4 @@
-# use your hands in front of the webcam!
 
-bpm = 142;
 s0.initCam();
 src(s0)
 	.modulatePixelate(noise(21.672, 0.82), 100)

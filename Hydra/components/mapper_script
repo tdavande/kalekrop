@@ -1,0 +1,51 @@
+(async () => {
+  // 1. Global State Management
+  // Only initialize if they don't exist to prevent visual "jumping" on re-run
+  window.flx = window.flx || { hi: 0.5, mid: 0.5, low: 0.5, fader: 0.5, filter: 0.5 }
+  window.target = window.target || { hi: 0.5, mid: 0.5, low: 0.5, fader: 0.5, filter: 0.5 }
+
+  // 2. Smoothing Engine
+  const smooth = (key, ease = 0.1) => {
+    window.flx[key] += (window.target[key] - window.flx[key]) * ease
+    return window.flx[key]
+  }
+
+  // 3. MIDI Hardware Link
+  try {
+    const access = await navigator.requestMIDIAccess()
+    const input = Array.from(access.inputs.values()).find(i => i.name.includes("DDJ-FLX4"))
+    
+    if (input) {
+      console.log("✅ FLX4 Linked: " + input.name)
+      input.onmidimessage = (m) => {
+        const [status, cc, value] = m.data
+        const norm = value / 127
+        if (cc === 7)  window.target.hi = norm
+        if (cc === 11) window.target.mid = norm
+        if (cc === 15) window.target.low = norm
+        if (cc === 19) window.target.fader = norm
+        if (cc === 23) window.target.filter = norm
+      }
+    } else {
+      console.warn("⚠️ DDJ-FLX4 not detected. Check USB connection.")
+    }
+  } catch (err) {
+    console.error("❌ MIDI Access Denied", err)
+  }
+
+  // 4. Hydra Visual Output
+  // Example mapping using your DDJ-FLX4 controls
+  osc(
+    () => smooth('hi') * 60 + 10, 
+    0.1, 
+    () => smooth('low') * 3
+  )
+  .modulate(
+    noise(3), 
+    () => smooth('mid')
+  )
+  .contrast(() => smooth('fader') * 2)
+  .hue(() => smooth('filter'))
+  .out()
+
+})()

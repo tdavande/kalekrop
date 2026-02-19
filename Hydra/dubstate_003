@@ -1,0 +1,19 @@
+
+s0.initVideo("https://upload.wikimedia.org/wikipedia/commons/d/db/Cosmic_Cycles_1-_The_Sun_%28SVS14313_-_Cosmic_Cycles-The_Sun_Concert_50mbps%29.webm")
+s1.initImage("https://skiddle.imgix.net/a/e/c/2176840_b646b603_dubstate-after-hours-w-more_1024.jpg")
+
+
+osc(10, 0.2, 0.8)
+  .modulate(src(s0), 0.5)
+  .pixelate(200, 200)
+  .kaleid(6)
+  .color(0.3, 1,0) 
+  .rotate(() => time * 0.1) 
+  .mask(
+    src(s1)
+    .luma(0.05, 0.05)
+  )
+
+  .add(src(s1), 0.2) 
+  
+  .out()
