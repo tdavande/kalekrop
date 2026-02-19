@@ -5,10 +5,11 @@
   window.target = window.target || { hi: 0.5, mid: 0.5, low: 0.5, fader: 0.5, filter: 0.5 }
 
   // 2. Smoothing Engine
-  const smooth = (key, ease = 0.1) => {
-    window.flx[key] += (window.target[key] - window.flx[key]) * ease
-    return window.flx[key]
-  }
+// Attach to window so Hydra can see it from the editor
+window.smooth = (key, ease = 0.1) => {
+  window.flx[key] += (window.target[key] - window.flx[key]) * ease
+  return window.flx[key]
+}
 
   // 3. MIDI Hardware Link
   try {
@@ -33,19 +34,5 @@
     console.error("❌ MIDI Access Denied", err)
   }
 
-  // 4. Hydra Visual Output
-  // Example mapping using your DDJ-FLX4 controls
-  osc(
-    () => smooth('hi') * 60 + 10, 
-    0.1, 
-    () => smooth('low') * 3
-  )
-  .modulate(
-    noise(3), 
-    () => smooth('mid')
-  )
-  .contrast(() => smooth('fader') * 2)
-  .hue(() => smooth('filter'))
-  .out()
 
 })()
