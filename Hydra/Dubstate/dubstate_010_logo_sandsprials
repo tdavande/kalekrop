@@ -1,0 +1,16 @@
+
+s1.initImage("https://skiddle.imgix.net/a/e/c/2176840_b646b603_dubstate-after-hours-w-more_1024.jpg")
+osc(3, 0.01, 0.4)
+.color(0.3,1.2,0.5)
+.modulateRepeat(osc(2),1, 2, 4, 3)
+.modulateKaleid(osc(12,0.05,0),1)
+.luma (0.4)
+.rotate(4, 0.1,0)
+.modulate(o0, () => mouse.y *0.0002 )
+.scale(1).diff(o1)
+  .mask(
+    src(s1)
+    .luma(0.05, 0.05)
+  )
+  .diff(src(s1)) 
+.out(o0)

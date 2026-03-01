@@ -1,5 +1,5 @@
 osc(3, 0.01, 0.4)
-.color(1.2,1.2,1.3)
+.color(0.3,1.2,1.3)
 .saturate(0.4)
 .modulateRepeat(osc(2),1, 2, 4, 3)
 .modulateKaleid(osc(12,0.05,0),1)

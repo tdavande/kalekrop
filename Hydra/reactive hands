@@ -1,12 +1,15 @@
 
-s0.initCam();
+s0.initCam()
 src(s0)
 	.modulatePixelate(noise(21.672, 0.82), 100)
 	.color(1, 0.564, 50)
-	.kaleid(4, 5)
-	.modulate(o0)
-	.modulate(osc(9, -0.3, 900)
-		.rotate(6))
-	.add(osc(4.55, 1.03, 90)
+	.modulateRepeat(o0)
+	.modulate(osc(9, -0.3, 900))
+	.add(osc(1, 1.03, 90)
 		.color(0.198, 0, 1.163))
-	.out(o0);
+.diff(voronoi(10,2,1)
+.color(1,0,50)
+.kaleid(4,1)
+.modulate(o0)
+.modulatePixelate(noise(25,0.5),100))
+	.out(o0)

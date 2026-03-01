@@ -1,0 +1,1 @@
+noise(0.6,2).color(0,2,0).modulateRepeatX(osc(400), 2, () => Math.sin(time) * 0.001).pixelate(20,20).posterize(10, 0.5 ).scale(0.1).out()

@@ -1,0 +1,22 @@
+
+s0.initVideo("https://upload.wikimedia.org/wikipedia/commons/f/fc/What_Is_an_Exoplanet-.webm")
+
+osc(10, 0.2, 0.8)
+ .modulate(src(s0), 0.5)
+  .color(0.6, 0.8,1) 
+  .rotate(() => time * 0.5) 
+  .add(
+    noise(5)
+    .luma(0.1, 0.05)
+  )
+.mult(
+src(s0)
+ .saturate(1)
+ .colorama(()=> a.fft[0]*0.5)
+  )
+.add(
+  src(s0)
+  )
+.kaleid(8)
+
+  .out()

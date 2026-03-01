@@ -1,0 +1,12 @@
+await loadScript("https://metagrowing.org/extra-shaders-for-hydra/all.js")
+
+window.frame = 0
+render(o3)
+s0.initCam() // initialize a webcam in source buffer s0
+src(s0).out(o2)
+src(o3)
+    .pysort(0.1, () => {return frame++;})
+    .diff(o2, () => {return ((frame % 100) == 0) ? 1 : 0.01;})
+    .contrast(1.01)
+.color(0,1,0)
+    .out(o3)
