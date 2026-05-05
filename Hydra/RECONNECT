@@ -1,0 +1,48 @@
+s1.initImage("https://i.postimg.cc/DZwFXpwT/output-onlinepngtools(1).png")
+noise(10, 1)
+	.modulate(noise(100))
+  .color(0,0,1)
+  .saturate(2)
+  .contrast(2)
+  	.out(o3)
+
+shape(100, 0.48, 0.02)//Arriba
+.scale(0.25,1,2)
+.modulate(noise(()=> nanoY * 0.05))
+.rotate(3.14159)
+.add(noise(10))
+.scrollY(0.131, 0)
+
+.add(shape(100,0.48,0.02)//Derecha
+.scale(0.25,1,2)
+.modulate(noise(()=> nanoY * 0.08))
+.rotate(3.14159)
+.scrollY(-0.241, 0)
+.scrollX(-0.107, 0))
+
+.add(shape(100,0.48,0.02)//Izquierda
+.scale(0.25,1,2)
+.modulate(noise(()=> nanoY * 0.3))
+.rotate(3.14159)
+.scrollY(-0.241, 0)
+.scrollX(0.107, 0))
+.mult(o3)
+.modulate(o0,0.001)
+.out(o0)
+
+shape(100,0.2,0.5)//Medio
+.modulate(o3,0.2)
+.mult(o3)
+.diff(src(o1).mult(o3))
+.scale(0.22,1,2)
+.scrollX(-0.01)
+.scrollY(-0.15)
+.out(o1)
+
+src(o0)
+  .add(src(s1), 0.8) 
+  .modulatePixelate(noise(1), 1024) 
+  .brightness(0.02)
+  .contrast(1.2)
+  .out(o2)
+render(o2)
