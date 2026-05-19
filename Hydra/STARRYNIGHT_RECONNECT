@@ -1,0 +1,29 @@
+// 1. Initialize your video and image slots
+s0.initVideo("https://cdn.pixabay.com/video/2023/10/02/183279-870457579_large.mp4") 
+s1.initVideo("https://cdn.pixabay.com/video/2020/02/06/32023-390497697_large.mp4")
+s2.initImage("https://upload.wikimedia.org/wikipedia/commons/a/a5/Cape_Fiolent%2C_rocks_at_night%2C_Crimea.jpg")
+s3.initVideo("https://cdn.pixabay.com/video/2018/02/09/14205-255658030_large.mp4")
+
+// Loop configuration: 6.28318 / 10 seconds = 0.6283
+// Change the 10 to a different number if you want a longer or shorter loop sequence!
+const loopSpeed = 6.28318 / 60
+
+src(s2)
+  .color(() => 0.6 + (Math.sin(time * loopSpeed) * 0.2), 1, 2)
+
+  .sub(
+    src(s0)
+      .modulateScale(
+        noise(5).color(1, 1), // Static spatial pattern
+        () => Math.sin(time * loopSpeed) * 0.03 // Smooth looping offset intensity
+      )
+  )
+  
+  // 4. Looping Hue Modulation on the Moon
+  .blend(
+    src(s1)
+      .scrollY(0.2)
+      .scale(0.68)
+      .contrast(1.2)
+  ) 
+  .out(o0)
