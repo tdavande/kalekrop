@@ -1,3 +1,49 @@
+/// --- 1. CONFIGURATION ---
+let flashDuration = 1; 
+let flashChance = 0.001;   
+
+// --- 2. STATE TRACKING ---
+let isFlashing = false;
+let flashStartTime = 0;
+let peakFlashValue = 0; 
+
+// --- 3. CORE LOGIC WITH EASE-IN-EASE-OUT ENVELOPE ---
+const autoSmoothSwell = () => {
+  let currentTime = time; 
+
+  // State A: Visual swell is active
+  if (isFlashing) {
+    let elapsed = currentTime - flashStartTime;
+
+
+    if (elapsed > flashDuration) {
+      isFlashing = false; 
+    } else {
+
+      let t = elapsed / flashDuration;
+      
+
+      let smoothEnvelope = Math.sin(t * Math.PI);
+      
+
+      return peakFlashValue * smoothEnvelope;
+    }
+  }
+
+
+  if (!isFlashing && Math.random() < flashChance) {
+    isFlashing = true;
+    flashStartTime = currentTime;
+
+    peakFlashValue = Math.random() * 20 - 10; 
+    return 0;
+  }
+
+  // State C: Default idle baseline
+  return 0;
+};
+
+
 // 1. Initialize your video and image slots
 s0.initVideo("https://cdn.pixabay.com/video/2023/10/02/183279-870457579_large.mp4") 
 s1.initVideo("https://cdn.pixabay.com/video/2020/02/06/32023-390497697_large.mp4")
@@ -9,17 +55,17 @@ s3.initVideo("https://cdn.pixabay.com/video/2018/02/09/14205-255658030_large.mp4
 const loopSpeed = 6.28318 / 60
 
 src(s2)
-  .color(() => 0.6 + (Math.sin(time * loopSpeed) * 0.2), 1, 2)
+  .color(() => 0.6 + (Math.sin(time * loopSpeed) * 0.25), 0.8, 2)
 
   .sub(
     src(s0)
       .modulateScale(
         noise(5).color(1, 1), // Static spatial pattern
-        () => Math.sin(time * loopSpeed) * 0.03 // Smooth looping offset intensity
-      )
+        () => Math.sin(time * loopSpeed) * 0.03)
+     // .colorama(()=> Math.tan(loopSpeed) * 10)
+    .colorama(() => autoSmoothSwell())
   )
-  
-  // 4. Looping Hue Modulation on the Moon
+
   .blend(
     src(s1)
       .scrollY(0.2)
