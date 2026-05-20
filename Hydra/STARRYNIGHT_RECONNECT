@@ -35,7 +35,7 @@ const autoSmoothSwell = () => {
     isFlashing = true;
     flashStartTime = currentTime;
 
-    peakFlashValue = Math.random() * 20 - 10; 
+    peakFlashValue = Math.random(); 
     return 0;
   }
 
