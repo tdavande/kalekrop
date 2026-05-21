@@ -1,4 +1,4 @@
-s1.initImage("https://i.postimg.cc/DZwFXpwT/output-onlinepngtools(1).png")
+s1.initImage("https://i.postimg.cc/NF2GrdqB/output-onlinepngtools(1).png")
 noise(10, 1)
 	.modulate(noise(100))
   .color(0,0,1)
